@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pick’em 2026 — Garrott vs Kyle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E8EDF1; --surface:#FFFFFF; --ink:#13202E; --muted:#5A6A7A; --line:#D2DBE3; --soft:#F2F5F8;
+  --g:#1E4FD8; --k:#E0801A; --win:#1F8A4C; --loss:#C2413A;
+  --turf:#1B5A3A; --turf2:#1F6642;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1A24; --surface:#152535; --ink:#E9EFF5; --muted:#93A5B6; --line:#24384C; --soft:#1B2E41;
+    --g:#5B86FF; --k:#F49A3A; --win:#3CB46E; --loss:#E2615A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1A24; --surface:#152535; --ink:#E9EFF5; --muted:#93A5B6; --line:#24384C; --soft:#1B2E41;
+  --g:#5B86FF; --k:#F49A3A; --win:#3CB46E; --loss:#E2615A; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 120px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 Barlow,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+button:focus-visible{outline:3px solid var(--g);outline-offset:2px}
+.cond{font-family:"Barlow Condensed","Arial Narrow",Barlow,sans-serif}
+.wrap{max-width:720px;margin:0 auto}
+
+/* Turf scoreboard */
+.hero{background:
+  repeating-linear-gradient(90deg,transparent 0 calc(10% - 2px),rgba(255,255,255,.16) calc(10% - 2px) 10%),
+  repeating-linear-gradient(90deg,var(--turf) 0 10%,var(--turf2) 10% 20%);
+  color:#fff;padding:18px 16px 20px}
+.hero h1{margin:0 0 14px;font:700 20px/1 "Barlow Condensed",sans-serif;letter-spacing:.02em;opacity:.9}
+.board{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:10px;max-width:520px;margin:0 auto}
+.side{display:flex;flex-direction:column;align-items:center}
+.side .who{font:700 18px/1 "Barlow Condensed",sans-serif;display:flex;align-items:center;gap:6px}
+.side .who i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.side .num{font:800 72px/1 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.side .sub{font-size:13px;opacity:.85}
+.vs{font:700 15px/1 "Barlow Condensed",sans-serif;opacity:.7;padding-bottom:30px}
+.lead{text-align:center;margin-top:10px;font-size:14px;opacity:.92}
+
+/* Sticky week bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.weeks{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;scrollbar-width:none}
+.weeks::-webkit-scrollbar{display:none}
+.wk{flex:0 0 auto;min-width:46px;height:48px;border-radius:10px;border:1px solid var(--line);background:var(--soft);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
+.wk b{font:700 19px/1 "Barlow Condensed",sans-serif}
+.wk small{font-size:10.5px;color:var(--muted);margin-top:3px;font-weight:600}
+.wk[aria-current="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.wk[aria-current="true"] small{color:var(--bg);opacity:.75}
+.cols{display:grid;grid-template-columns:1fr 50px 50px 50px;align-items:center;padding:6px 14px 8px;gap:6px}
+.cols .wkt{font:700 22px/1.1 "Barlow Condensed",sans-serif}
+.cols .wkt span{display:block;font:500 13px/1.3 Barlow,sans-serif;color:var(--muted)}
+.cols .h{text-align:center;font:700 15px/1 "Barlow Condensed",sans-serif}
+.cols .h.g{color:var(--g)} .cols .h.k{color:var(--k)}
+.cols .h em{display:block;font:600 12px/1.3 Barlow,sans-serif;font-style:normal;color:var(--muted);margin-top:2px}
+
+main{padding:4px 10px 40px}
+.day{font:700 15px/1 "Barlow Condensed",sans-serif;color:var(--muted);margin:18px 6px 8px;letter-spacing:.02em}
+.game{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.meta{display:flex;justify-content:space-between;gap:8px;padding:8px 14px 0;font-size:12.5px;color:var(--muted);font-weight:600}
+.meta .st{font-weight:700}
+.meta .st.live{color:var(--loss)} .meta .st.fin{color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 50px 50px 50px;align-items:center;gap:6px;padding:6px 14px}
+.team{display:flex;align-items:center;gap:10px;min-width:0}
+.bdg{width:38px;height:44px;flex:0 0 auto;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18))}
+.tn{min-width:0;flex:1}
+.tn .nm{font:700 19px/1.05 "Barlow Condensed",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tn .ct{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc{font:800 24px/1 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;min-width:30px;text-align:right}
+.row.lost .nm,.row.lost .sc{opacity:.45}
+.row.won .sc::after{content:"";display:inline-block;border:5px solid transparent;border-right-color:var(--ink);margin-left:3px;vertical-align:middle}
+.ck{width:44px;height:44px;margin:0 auto;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;transition:transform .12s,background-color .12s}
+.ck svg{width:22px;height:22px;opacity:0}
+.ck.on svg{opacity:1}
+.ck.g.on{background:var(--g);border-color:var(--g);color:#fff}
+.ck.k.on{background:var(--k);border-color:var(--k);color:#fff}
+:root{--t:#7A3FC4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--t:#B08AF5}}
+:root[data-theme="dark"]{--t:#B08AF5}
+.ck.t.on{background:var(--t);border-color:var(--t);color:#fff}
+.cols .h.t{color:var(--t);font-size:13px}
+.ck.on.right{background:var(--win);border-color:var(--win)}
+.ck.on.wrong{background:var(--loss);border-color:var(--loss)}
+.ck.locked:not(.on){opacity:.35}
+.ck:active{transform:scale(.9)}
+.ck.nudge{animation:nudge .3s}
+@keyframes nudge{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.manual{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 14px 10px;font-size:13px;color:var(--muted)}
+.manual button{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:6px 10px;font-weight:600;font-size:13px;color:var(--ink)}
+.manual button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.gap{height:4px}
+.byes{margin:16px 6px;font-size:13.5px;color:var(--muted)}
+.foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:24px 6px 0;font-size:13px;color:var(--muted)}
+.tog{display:flex;align-items:center;gap:8px;cursor:pointer}
+.tog input{width:18px;height:18px;accent-color:var(--g)}
+.sync{display:flex;align-items:center;gap:6px}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync.ok i{background:var(--win)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;max-width:90vw;text-align:center;z-index:20}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:400px){
+  .row,.cols{grid-template-columns:1fr 42px 42px 42px;gap:4px}
+  .ck{width:38px;height:38px}
+  .bdg{width:32px;height:38px}
+  .cols .h,.cols .h.t{font-size:12.5px}
+  .cols .h em{font-size:11px}
+  .tn .nm{font-size:17px}
+  .side .num{font-size:60px}
+}
+.team{cursor:pointer;border-radius:10px}
+.team:focus-visible{outline:3px solid var(--g);outline-offset:2px}
+.sheet{position:fixed;inset:0;z-index:30}
+.sheet[hidden]{display:none}
+.scrim{position:absolute;inset:0;background:rgba(8,14,20,.55)}
+.panel{position:absolute;left:0;right:0;bottom:0;max-width:720px;margin:0 auto;max-height:86%;background:var(--surface);border-radius:18px 18px 0 0;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px);animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.ph{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+.ph .bdg{width:48px;height:56px}
+.ph h2{margin:0;font:800 26px/1 "Barlow Condensed",sans-serif}
+.ph p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.x{margin-left:auto;flex:0 0 auto;width:40px;height:40px;border-radius:50%;background:var(--soft);font-size:16px}
+.pl{overflow-y:auto;padding:4px 10px 18px;overscroll-behavior:contain}
+.sec{font:700 15px/1 "Barlow Condensed",sans-serif;color:var(--muted);margin:16px 6px 4px}
+.gl{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.gl:last-child{border-bottom:0}
+.gl .wkn{font:700 13px/1.2 Barlow,sans-serif;color:var(--muted)}
+.opw{display:flex;align-items:center;gap:10px;min-width:0}
+.opw .bdg{width:30px;height:35px}
+.op{font:700 17px/1.1 "Barlow Condensed",sans-serif;min-width:0}
+.op span{display:block;font:500 12.5px/1.3 Barlow,sans-serif;color:var(--muted)}
+.res{font:800 18px/1 "Barlow Condensed",sans-serif;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.res.w{color:var(--win)} .res.l{color:var(--loss)} .res.up{font:600 13px/1.3 Barlow,sans-serif;color:var(--muted)}
+.byeln{margin:12px 6px 0;font-size:13.5px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <h1>2026 NFL Pick’em</h1>
+    <div class="board">
+      <div class="side"><div class="who"><i style="background:var(--g)"></i>Garrott</div><div class="num" id="sG">0</div><div class="sub" id="wG"></div></div>
+      <div class="vs">vs</div>
+      <div class="side"><div class="who"><i style="background:var(--k)"></i>Kyle</div><div class="num" id="sK">0</div><div class="sub" id="wK"></div></div>
+    </div>
+    <div class="lead" id="lead"></div>
+  </div>
+</header>
+<div class="bar">
+  <div class="wrap">
+    <nav class="weeks" id="weeks" aria-label="Weeks"></nav>
+    <div class="cols">
+      <div class="wkt" id="wkt"></div>
+      <div class="h g">Garrott<em id="pG"></em></div>
+      <div class="h k">Kyle<em id="pK"></em></div>
+      <div class="h t">Together<em id="pT"></em></div>
+    </div>
+  </div>
+</div>
+<main class="wrap" id="main"></main>
+<div class="toast" id="toast" role="status"></div>
+<div class="sheet" id="sheet" hidden>
+  <div class="scrim" data-close></div>
+  <section class="panel" role="dialog" aria-modal="true" aria-labelledby="shT">
+    <header class="ph"><div id="shHead" style="display:flex;align-items:center;gap:12px;min-width:0"></div><button class="x" id="shX" data-close aria-label="Close">✕</button></header>
+    <div class="pl" id="shList"></div>
+  </section>
+</div>
+
+<script>
+const DATA = {"T":{"ARI":["Arizona","Cardinals","#97233F","#000000","NFC West"],"ATL":["Atlanta","Falcons","#A71930","#000000","NFC South"],"BAL":["Baltimore","Ravens","#241773","#9E7C0C","AFC North"],"BUF":["Buffalo","Bills","#00338D","#C60C30","AFC East"],"CAR":["Carolina","Panthers","#0085CA","#000000","NFC South"],"CHI":["Chicago","Bears","#0B162A","#E64100","NFC North"],"CIN":["Cincinnati","Bengals","#FB4F14","#000000","AFC North"],"CLE":["Cleveland","Browns","#FF3C00","#311D00","AFC North"],"DAL":["Dallas","Cowboys","#002244","#B0B7BC","NFC East"],"DEN":["Denver","Broncos","#002244","#FB4F14","AFC West"],"DET":["Detroit","Lions","#0076B6","#B0B7BC","NFC North"],"GB":["Green Bay","Packers","#203731","#FFB612","NFC North"],"HOU":["Houston","Texans","#03202F","#A71930","AFC South"],"IND":["Indianapolis","Colts","#002C5F","#a5acaf","AFC South"],"JAX":["Jacksonville","Jaguars","#006778","#000000","AFC South"],"KC":["Kansas City","Chiefs","#E31837","#FFB612","AFC West"],"LA":["Los Angeles","Rams","#003594","#FFD100","NFC West"],"LAC":["Los Angeles","Chargers","#007BC7","#ffc20e","AFC West"],"LV":["Las Vegas","Raiders","#000000","#A5ACAF","AFC West"],"MIA":["Miami","Dolphins","#008E97","#F58220","AFC East"],"MIN":["Minnesota","Vikings","#4F2683","#FFC62F","NFC North"],"NE":["New England","Patriots","#002244","#C60C30","AFC East"],"NO":["New Orleans","Saints","#D3BC8D","#000000","NFC South"],"NYG":["New York","Giants","#0B2265","#A71930","NFC East"],"NYJ":["New York","Jets","#003F2D","#000000","AFC East"],"PHI":["Philadelphia","Eagles","#004C54","#A5ACAF","NFC East"],"PIT":["Pittsburgh","Steelers","#000000","#FFB612","AFC North"],"SEA":["Seattle","Seahawks","#002244","#69be28","NFC West"],"SF":["San Francisco","49ers","#AA0000","#B3995D","NFC West"],"TB":["Tampa Bay","Buccaneers","#A71930","#322F2B","NFC South"],"TEN":["Tennessee","Titans","#4495D2","#D50A0A","AFC South"],"WAS":["Washington","Commanders","#5A1414","#FFB612","NFC East"]},"G":[["2026_01_NE_SEA",1,"2026-09-09","20:20","NE","SEA",10,13,0],["2026_01_SF_LA",1,"2026-09-10","20:35","SF","LA",27,7,1],["2026_01_CHI_CAR",1,"2026-09-13","13:00","CHI","CAR",59,37,0],["2026_01_TB_CIN",1,"2026-09-13","13:00","TB","CIN",27,33,0],["2026_01_NO_DET",1,"2026-09-13","13:00","NO","DET",30,31,0],["2026_01_BUF_HOU",1,"2026-09-13","13:00","BUF","HOU",36,31,0],["2026_01_BAL_IND",1,"2026-09-13","13:00","BAL","IND",41,23,0],["2026_01_CLE_JAX",1,"2026-09-13","13:00","CLE","JAX",10,34,0],["2026_01_ATL_PIT",1,"2026-09-13","13:00","ATL","PIT",13,20,0],["2026_01_NYJ_TEN",1,"2026-09-13","13:00","NYJ","TEN",23,10,0],["2026_01_ARI_LAC",1,"2026-09-13","16:25","ARI","LAC",26,14,0],["2026_01_MIA_LV",1,"2026-09-13","16:25","MIA","LV",13,27,0],["2026_01_GB_MIN",1,"2026-09-13","16:25","GB","MIN",22,39,0],["2026_01_WAS_PHI",1,"2026-09-13","16:25","WAS","PHI",22,24,0],["2026_01_DAL_NYG",1,"2026-09-13","20:20","DAL","NYG",20,28,0],["2026_01_DEN_KC",1,"2026-09-14","20:15","DEN","KC",10,31,0],["2026_02_DET_BUF",2,"2026-09-17","20:15","DET","BUF",31,41,0],["2026_02_CAR_ATL",2,"2026-09-20","13:00","CAR","ATL",34,3,0],["2026_02_NO_BAL",2,"2026-09-20","13:00","NO","BAL",24,17,0],["2026_02_MIN_CHI",2,"2026-09-20","13:00","MIN","CHI",9,3,0],["2026_02_CIN_HOU",2,"2026-09-20","13:00","CIN","HOU",20,6,0],["2026_02_PIT_NE",2,"2026-09-20","13:00","PIT","NE",3,20,0],["2026_02_GB_NYJ",2,"2026-09-20","13:00","GB","NYJ",20,17,0],["2026_02_CLE_TB",2,"2026-09-20","13:00","CLE","TB",23,19,0],["2026_02_PHI_TEN",2,"2026-09-20","13:00","PHI","TEN",24,20,0],["2026_02_JAX_DEN",2,"2026-09-20","16:05","JAX","DEN",13,20,0],["2026_02_LV_LAC",2,"2026-09-20","16:05","LV","LAC",26,14,0],["2026_02_SEA_ARI",2,"2026-09-20","16:25","SEA","ARI",31,7,0],["2026_02_WAS_DAL",2,"2026-09-20","16:25","WAS","DAL",20,37,0],["2026_02_MIA_SF",2,"2026-09-20","16:25","MIA","SF",13,35,0],["2026_02_IND_KC",2,"2026-09-20","20:20","IND","KC",30,33,0],["2026_02_NYG_LA",2,"2026-09-21","20:15","NYG","LA",6,28,0],["2026_03_ATL_GB",3,"2026-09-24","20:15","ATL","GB",35,14,0],["2026_03_LAC_BUF",3,"2026-09-27","13:00","LAC","BUF",16,24,0],["2026_03_CAR_CLE",3,"2026-09-27","13:00","CAR","CLE",18,21,0],["2026_03_NYJ_DET",3,"2026-09-27","13:00","NYJ","DET",24,31,0],["2026_03_HOU_IND",3,"2026-09-27","13:00","HOU","IND",17,19,0],["2026_03_NE_JAX",3,"2026-09-27","13:00","NE","JAX",6,35,0],["2026_03_KC_MIA",3,"2026-09-27","13:00","KC","MIA",24,10,0],["2026_03_TEN_NYG",3,"2026-09-27","13:00","TEN","NYG",7,12,0],["2026_03_CIN_PIT",3,"2026-09-27","13:00","CIN","PIT",27,30,0],["2026_03_SEA_WAS",3,"2026-09-27","13:00","SEA","WAS",31,33,0],["2026_03_ARI_SF",3,"2026-09-27","16:05","ARI","SF",30,36,0],["2026_03_MIN_TB",3,"2026-09-27","16:05","MIN","TB",23,16,0],["2026_03_BAL_DAL",3,"2026-09-27","16:25","BAL","DAL",34,31,1],["2026_03_LV_NO",3,"2026-09-27","16:25","LV","NO",35,27,0],["2026_03_LA_DEN",3,"2026-09-27","20:20","LA","DEN",26,30,0],["2026_03_PHI_CHI",3,"2026-09-28","20:15","PHI","CHI",7,27,0],["2026_04_PIT_CLE",4,"2026-10-01","20:15","PIT","CLE",24,27,0],["2026_04_IND_WAS",4,"2026-10-04","09:30","IND","WAS",30,13,1],["2026_04_TEN_BAL",4,"2026-10-04","13:00","TEN","BAL",18,24,0],["2026_04_NE_BUF",4,"2026-10-04","13:00","NE","BUF",29,26,0],["2026_04_NYJ_CHI",4,"2026-10-04","13:00","NYJ","CHI",12,23,0],["2026_04_JAX_CIN",4,"2026-10-04","13:00","JAX","CIN",22,17,0],["2026_04_DAL_HOU",4,"2026-10-04","13:00","DAL","HOU",34,30,0],["2026_04_ARI_NYG",4,"2026-10-04","13:00","ARI","NYG",24,36,0],["2026_04_LA_PHI",4,"2026-10-04","13:00","LA","PHI",24,20,0],["2026_04_GB_TB",4,"2026-10-04","13:00","GB","TB",17,14,0],["2026_04_MIA_MIN",4,"2026-10-04","16:05","MIA","MIN",10,15,0],["2026_04_KC_LV",4,"2026-10-04","16:25","KC","LV",30,27,0],["2026_04_LAC_SEA",4,"2026-10-04","16:25","LAC","SEA",23,30,0],["2026_04_DEN_SF",4,"2026-10-04","16:25","DEN","SF",14,24,0],["2026_04_DET_CAR",4,"2026-10-04","20:20","DET","CAR",26,32,0],["2026_04_ATL_NO",4,"2026-10-05","20:15","ATL","NO",45,24,0],["2026_05_TB_DAL",5,"2026-10-08","20:15","TB","DAL",24,16,0],["2026_05_PHI_JAX",5,"2026-10-11","09:30","PHI","JAX",17,19,1],["2026_05_CHI_GB",5,"2026-10-11","13:00","CHI","GB",7,31,0],["2026_05_CIN_MIA",5,"2026-10-11","13:00","CIN","MIA",31,24,0],["2026_05_LV_NE",5,"2026-10-11","13:00","LV","NE",17,45,0],["2026_05_MIN_NO",5,"2026-10-11","13:00","MIN","NO",23,13,0],["2026_05_CLE_NYJ",5,"2026-10-11","13:00","CLE","NYJ",12,17,0],["2026_05_IND_PIT",5,"2026-10-11","13:00","IND","PIT",22,34,0],["2026_05_HOU_TEN",5,"2026-10-11","13:00","HOU","TEN",26,3,0],["2026_05_NYG_WAS",5,"2026-10-11","13:00","NYG","WAS",27,27,0],["2026_05_DEN_LAC",5,"2026-10-11","16:05","DEN","LAC",23,17,0],["2026_05_DET_ARI",5,"2026-10-11","16:25","DET","ARI",45,21,0],["2026_05_SF_SEA",5,"2026-10-11","16:25","SF","SEA",32,29,0],["2026_05_BAL_ATL",5,"2026-10-11","20:20","BAL","ATL",30,23,0],["2026_05_BUF_LA",5,"2026-10-12","20:15","BUF","LA",37,34,0],["2026_06_SEA_DEN",6,"2026-10-15","20:15","SEA","DEN",14,17,0],["2026_06_HOU_JAX",6,"2026-10-18","09:30","HOU","JAX",34,31,1],["2026_06_CHI_ATL",6,"2026-10-18","13:00","CHI","ATL",31,23,0],["2026_06_BAL_CLE",6,"2026-10-18","13:00","BAL","CLE",10,13,0],["2026_06_TEN_IND",6,"2026-10-18","13:00","TEN","IND",26,20,0],["2026_06_NYJ_NE",6,"2026-10-18","13:00","NYJ","NE",19,26,0],["2026_06_NO_NYG",6,"2026-10-18","13:00","NO","NYG",34,27,0],["2026_06_CAR_PHI",6,"2026-10-18","13:00","CAR","PHI",25,14,0],["2026_06_PIT_TB",6,"2026-10-18","13:00","PIT","TB",26,19,0],["2026_06_ARI_LA",6,"2026-10-18","16:05","ARI","LA",18,16,0],["2026_06_LAC_KC",6,"2026-10-18","16:25","LAC","KC",6,22,0],["2026_06_BUF_LV",6,"2026-10-18","16:25","BUF","LV",33,30,0],["2026_06_DAL_GB",6,"2026-10-18","20:20","DAL","GB",13,23,0],["2026_06_WAS_SF",6,"2026-10-19","20:15","WAS","SF",17,23,0],["2026_07_NE_CHI",7,"2026-10-22","20:15","NE","CHI",null,null,0],["2026_07_PIT_NO",7,"2026-10-25","09:30","PIT","NO",null,null,1],["2026_07_SF_ATL",7,"2026-10-25","13:00","SF","ATL",null,null,0],["2026_07_CIN_BAL",7,"2026-10-25","13:00","CIN","BAL",null,null,0],["2026_07_TB_CAR",7,"2026-10-25","13:00","TB","CAR",null,null,0],["2026_07_NYG_HOU",7,"2026-10-25","13:00","NYG","HOU",null,null,0],["2026_07_IND_MIN",7,"2026-10-25","13:00","IND","MIN",null,null,0],["2026_07_MIA_NYJ",7,"2026-10-25","13:00","MIA","NYJ",null,null,0],["2026_07_CLE_TEN",7,"2026-10-25","13:00","CLE","TEN",null,null,0],["2026_07_DEN_ARI",7,"2026-10-25","16:05","DEN","ARI",null,null,0],["2026_07_GB_DET",7,"2026-10-25","16:25","GB","DET",null,null,0],["2026_07_LA_LV",7,"2026-10-25","16:25","LA","LV",null,null,0],["2026_07_KC_SEA",7,"2026-10-25","20:20","KC","SEA",null,null,0],["2026_07_DAL_PHI",7,"2026-10-26","20:15","DAL","PHI",null,null,0],["2026_08_CAR_GB",8,"2026-10-29","20:15","CAR","GB",null,null,0],["2026_08_BAL_BUF",8,"2026-11-01","13:00","BAL","BUF",null,null,0],["2026_08_TEN_CIN",8,"2026-11-01","13:00","TEN","CIN",null,null,0],["2026_08_ARI_DAL",8,"2026-11-01","13:00","ARI","DAL",null,null,0],["2026_08_MIN_DET",8,"2026-11-01","13:00","MIN","DET",null,null,0],["2026_08_IND_JAX",8,"2026-11-01","13:00","IND","JAX",null,null,0],["2026_08_LV_NYJ",8,"2026-11-01","13:00","LV","NYJ",null,null,0],["2026_08_CLE_PIT",8,"2026-11-01","13:00","CLE","PIT",null,null,0],["2026_08_ATL_TB",8,"2026-11-01","13:00","ATL","TB",null,null,0],["2026_08_LAC_LA",8,"2026-11-01","16:05","LAC","LA",null,null,0],["2026_08_KC_DEN",8,"2026-11-01","16:25","KC","DEN",null,null,0],["2026_08_NE_MIA",8,"2026-11-01","16:25","NE","MIA",null,null,0],["2026_08_PHI_WAS",8,"2026-11-01","20:20","PHI","WAS",null,null,0],["2026_08_CHI_SEA",8,"2026-11-02","20:15","CHI","SEA",null,null,0],["2026_09_JAX_BAL",9,"2026-11-05","20:15","JAX","BAL",null,null,0],["2026_09_CIN_ATL",9,"2026-11-08","09:30","CIN","ATL",null,null,1],["2026_09_DEN_CAR",9,"2026-11-08","13:00","DEN","CAR",null,null,0],["2026_09_DAL_IND",9,"2026-11-08","13:00","DAL","IND",null,null,0],["2026_09_NYJ_KC",9,"2026-11-08","13:00","NYJ","KC",null,null,0],["2026_09_DET_MIA",9,"2026-11-08","13:00","DET","MIA",null,null,0],["2026_09_CLE_NO",9,"2026-11-08","13:00","CLE","NO",null,null,0],["2026_09_NYG_PHI",9,"2026-11-08","13:00","NYG","PHI",null,null,0],["2026_09_LA_WAS",9,"2026-11-08","13:00","LA","WAS",null,null,0],["2026_09_HOU_LAC",9,"2026-11-08","16:05","HOU","LAC",null,null,0],["2026_09_LV_SF",9,"2026-11-08","16:05","LV","SF",null,null,0],["2026_09_GB_NE",9,"2026-11-08","16:25","GB","NE",null,null,0],["2026_09_ARI_SEA",9,"2026-11-08","16:25","ARI","SEA",null,null,0],["2026_09_TB_CHI",9,"2026-11-08","20:20","TB","CHI",null,null,0],["2026_09_BUF_MIN",9,"2026-11-09","20:15","BUF","MIN",null,null,0],["2026_10_WAS_NYG",10,"2026-11-12","20:15","WAS","NYG",null,null,0],["2026_10_NE_DET",10,"2026-11-15","09:30","NE","DET",null,null,1],["2026_10_KC_ATL",10,"2026-11-15","13:00","KC","ATL",null,null,0],["2026_10_HOU_CLE",10,"2026-11-15","13:00","HOU","CLE",null,null,0],["2026_10_MIN_GB",10,"2026-11-15","13:00","MIN","GB",null,null,0],["2026_10_MIA_IND",10,"2026-11-15","13:00","MIA","IND",null,null,0],["2026_10_CAR_NO",10,"2026-11-15","13:00","CAR","NO",null,null,0],["2026_10_BUF_NYJ",10,"2026-11-15","13:00","BUF","NYJ",null,null,0],["2026_10_JAX_TEN",10,"2026-11-15","13:00","JAX","TEN",null,null,0],["2026_10_LA_ARI",10,"2026-11-15","16:05","LA","ARI",null,null,0],["2026_10_SEA_LV",10,"2026-11-15","16:05","SEA","LV",null,null,0],["2026_10_SF_DAL",10,"2026-11-15","16:25","SF","DAL",null,null,0],["2026_10_PIT_CIN",10,"2026-11-15","20:20","PIT","CIN",null,null,0],["2026_10_LAC_BAL",10,"2026-11-16","20:15","LAC","BAL",null,null,0],["2026_11_IND_HOU",11,"2026-11-19","20:15","IND","HOU",null,null,0],["2026_11_MIA_BUF",11,"2026-11-22","13:00","MIA","BUF",null,null,0],["2026_11_BAL_CAR",11,"2026-11-22","13:00","BAL","CAR",null,null,0],["2026_11_NO_CHI",11,"2026-11-22","13:00","NO","CHI",null,null,0],["2026_11_TEN_DAL",11,"2026-11-22","13:00","TEN","DAL",null,null,0],["2026_11_TB_DET",11,"2026-11-22","13:00","TB","DET",null,null,0],["2026_11_ARI_KC",11,"2026-11-22","13:00","ARI","KC",null,null,0],["2026_11_JAX_NYG",11,"2026-11-22","13:00","JAX","NYG",null,null,0],["2026_11_NYJ_LAC",11,"2026-11-22","16:05","NYJ","LAC",null,null,0],["2026_11_LV_DEN",11,"2026-11-22","16:25","LV","DEN",null,null,0],["2026_11_PIT_PHI",11,"2026-11-22","16:25","PIT","PHI",null,null,0],["2026_11_MIN_SF",11,"2026-11-22","20:20","MIN","SF",null,null,1],["2026_11_CIN_WAS",11,"2026-11-23","20:15","CIN","WAS",null,null,0],["2026_12_GB_LA",12,"2026-11-25","20:00","GB","LA",null,null,0],["2026_12_CHI_DET",12,"2026-11-26","13:00","CHI","DET",null,null,0],["2026_12_PHI_DAL",12,"2026-11-26","16:30","PHI","DAL",null,null,0],["2026_12_KC_BUF",12,"2026-11-26","20:20","KC","BUF",null,null,0],["2026_12_DEN_PIT",12,"2026-11-27","15:00","DEN","PIT",null,null,0],["2026_12_NO_CIN",12,"2026-11-29","13:00","NO","CIN",null,null,0],["2026_12_LV_CLE",12,"2026-11-29","13:00","LV","CLE",null,null,0],["2026_12_BAL_HOU",12,"2026-11-29","13:00","BAL","HOU",null,null,0],["2026_12_NYG_IND",12,"2026-11-29","13:00","NYG","IND",null,null,0],["2026_12_NYJ_MIA",12,"2026-11-29","13:00","NYJ","MIA",null,null,0],["2026_12_ATL_MIN",12,"2026-11-29","13:00","ATL","MIN",null,null,0],["2026_12_TEN_JAX",12,"2026-11-29","16:05","TEN","JAX",null,null,0],["2026_12_WAS_ARI",12,"2026-11-29","16:25","WAS","ARI",null,null,0],["2026_12_SEA_SF",12,"2026-11-29","16:25","SEA","SF",null,null,0],["2026_12_NE_LAC",12,"2026-11-29","20:20","NE","LAC",null,null,0],["2026_12_CAR_TB",12,"2026-11-30","20:15","CAR","TB",null,null,0],["2026_13_KC_LA",13,"2026-12-03","20:15","KC","LA",null,null,0],["2026_13_DET_ATL",13,"2026-12-06","13:00","DET","ATL",null,null,0],["2026_13_JAX_CHI",13,"2026-12-06","13:00","JAX","CHI",null,null,0],["2026_13_CIN_CLE",13,"2026-12-06","13:00","CIN","CLE",null,null,0],["2026_13_GB_NO",13,"2026-12-06","13:00","GB","NO",null,null,0],["2026_13_SF_NYG",13,"2026-12-06","13:00","SF","NYG",null,null,0],["2026_13_LAC_TB",13,"2026-12-06","13:00","LAC","TB",null,null,0],["2026_13_WAS_TEN",13,"2026-12-06","13:00","WAS","TEN",null,null,0],["2026_13_PHI_ARI",13,"2026-12-06","16:05","PHI","ARI",null,null,0],["2026_13_MIA_DEN",13,"2026-12-06","16:05","MIA","DEN",null,null,0],["2026_13_CAR_MIN",13,"2026-12-06","16:25","CAR","MIN",null,null,0],["2026_13_BUF_NE",13,"2026-12-06","16:25","BUF","NE",null,null,0],["2026_13_HOU_PIT",13,"2026-12-06","20:20","HOU","PIT",null,null,0],["2026_13_DAL_SEA",13,"2026-12-07","20:15","DAL","SEA",null,null,0],["2026_14_MIN_NE",14,"2026-12-10","20:15","MIN","NE",null,null,0],["2026_14_TB_BAL",14,"2026-12-13","13:00","TB","BAL",null,null,0],["2026_14_NO_CAR",14,"2026-12-13","13:00","NO","CAR",null,null,0],["2026_14_ATL_CLE",14,"2026-12-13","13:00","ATL","CLE",null,null,0],["2026_14_TEN_DET",14,"2026-12-13","13:00","TEN","DET",null,null,0],["2026_14_CHI_MIA",14,"2026-12-13","13:00","CHI","MIA",null,null,0],["2026_14_DEN_NYJ",14,"2026-12-13","13:00","DEN","NYJ",null,null,0],["2026_14_IND_PHI",14,"2026-12-13","13:00","IND","PHI",null,null,0],["2026_14_HOU_WAS",14,"2026-12-13","13:00","HOU","WAS",null,null,0],["2026_14_LAC_LV",14,"2026-12-13","16:05","LAC","LV",null,null,0],["2026_14_KC_CIN",14,"2026-12-13","16:25","KC","CIN",null,null,0],["2026_14_NYG_SEA",14,"2026-12-13","16:25","NYG","SEA",null,null,0],["2026_14_LA_SF",14,"2026-12-13","16:25","LA","SF",null,null,0],["2026_14_BUF_GB",14,"2026-12-13","20:20","BUF","GB",null,null,0],["2026_14_PIT_JAX",14,"2026-12-14","20:15","PIT","JAX",null,null,0],["2026_15_SF_LAC",15,"2026-12-17","20:15","SF","LAC",null,null,0],["2026_15_SEA_PHI",15,"2026-12-19","17:00","SEA","PHI",null,null,0],["2026_15_CHI_BUF",15,"2026-12-19","20:20","CHI","BUF",null,null,0],["2026_15_CIN_CAR",15,"2026-12-20","13:00","CIN","CAR",null,null,0],["2026_15_MIA_GB",15,"2026-12-20","13:00","MIA","GB",null,null,0],["2026_15_JAX_HOU",15,"2026-12-20","13:00","JAX","HOU",null,null,0],["2026_15_CLE_NYG",15,"2026-12-20","13:00","CLE","NYG",null,null,0],["2026_15_BAL_PIT",15,"2026-12-20","13:00","BAL","PIT",null,null,0],["2026_15_NO_TB",15,"2026-12-20","13:00","NO","TB",null,null,0],["2026_15_IND_TEN",15,"2026-12-20","13:00","IND","TEN",null,null,0],["2026_15_ATL_WAS",15,"2026-12-20","13:00","ATL","WAS",null,null,0],["2026_15_NYJ_ARI",15,"2026-12-20","16:05","NYJ","ARI",null,null,0],["2026_15_DAL_LA",15,"2026-12-20","16:25","DAL","LA",null,null,0],["2026_15_DEN_LV",15,"2026-12-20","16:25","DEN","LV",null,null,0],["2026_15_DET_MIN",15,"2026-12-20","20:20","DET","MIN",null,null,0],["2026_15_NE_KC",15,"2026-12-21","20:15","NE","KC",null,null,0],["2026_16_HOU_PHI",16,"2026-12-24","20:15","HOU","PHI",null,null,0],["2026_16_GB_CHI",16,"2026-12-25","13:00","GB","CHI",null,null,0],["2026_16_BUF_DEN",16,"2026-12-25","16:30","BUF","DEN",null,null,0],["2026_16_LA_SEA",16,"2026-12-25","20:15","LA","SEA",null,null,0],["2026_16_TB_ATL",16,"2026-12-27","13:00","TB","ATL",null,null,0],["2026_16_CLE_BAL",16,"2026-12-27","13:00","CLE","BAL",null,null,0],["2026_16_CIN_IND",16,"2026-12-27","13:00","CIN","IND",null,null,0],["2026_16_LAC_MIA",16,"2026-12-27","13:00","LAC","MIA",null,null,0],["2026_16_WAS_MIN",16,"2026-12-27","13:00","WAS","MIN",null,null,0],["2026_16_ARI_NO",16,"2026-12-27","13:00","ARI","NO",null,null,0],["2026_16_NE_NYJ",16,"2026-12-27","13:00","NE","NYJ",null,null,0],["2026_16_CAR_PIT",16,"2026-12-27","13:00","CAR","PIT",null,null,0],["2026_16_TEN_LV",16,"2026-12-27","16:05","TEN","LV",null,null,0],["2026_16_SF_KC",16,"2026-12-27","16:25","SF","KC",null,null,0],["2026_16_JAX_DAL",16,"2026-12-27","20:20","JAX","DAL",null,null,0],["2026_16_NYG_DET",16,"2026-12-28","20:15","NYG","DET",null,null,0],["2026_17_BAL_CIN",17,"2026-12-31","20:15","BAL","CIN",null,null,0],["2026_17_NO_ATL",17,"2027-01-03","13:00","NO","ATL",null,null,0],["2026_17_SEA_CAR",17,"2027-01-03","13:00","SEA","CAR",null,null,0],["2026_17_IND_CLE",17,"2027-01-03","13:00","IND","CLE",null,null,0],["2026_17_NYG_DAL",17,"2027-01-03","13:00","NYG","DAL",null,null,0],["2026_17_WAS_JAX",17,"2027-01-03","13:00","WAS","JAX",null,null,0],["2026_17_KC_LAC",17,"2027-01-03","13:00","KC","LAC",null,null,0],["2026_17_BUF_MIA",17,"2027-01-03","13:00","BUF","MIA",null,null,0],["2026_17_DEN_NE",17,"2027-01-03","13:00","DEN","NE",null,null,0],["2026_17_MIN_NYJ",17,"2027-01-03","13:00","MIN","NYJ",null,null,0],["2026_17_LA_TB",17,"2027-01-03","13:00","LA","TB",null,null,0],["2026_17_PIT_TEN",17,"2027-01-03","13:00","PIT","TEN",null,null,0],["2026_17_LV_ARI",17,"2027-01-03","16:05","LV","ARI",null,null,0],["2026_17_DET_CHI",17,"2027-01-03","16:25","DET","CHI",null,null,0],["2026_17_PHI_SF",17,"2027-01-03","20:20","PHI","SF",null,null,0],["2026_17_HOU_GB",17,"2027-01-04","20:15","HOU","GB",null,null,0],["2026_18_SF_ARI",18,"2027-01-10","13:00","SF","ARI",null,null,0],["2026_18_PIT_BAL",18,"2027-01-10","13:00","PIT","BAL",null,null,0],["2026_18_NYJ_BUF",18,"2027-01-10","13:00","NYJ","BUF",null,null,0],["2026_18_ATL_CAR",18,"2027-01-10","13:00","ATL","CAR",null,null,0],["2026_18_CLE_CIN",18,"2027-01-10","13:00","CLE","CIN",null,null,0],["2026_18_LAC_DEN",18,"2027-01-10","13:00","LAC","DEN",null,null,0],["2026_18_DET_GB",18,"2027-01-10","13:00","DET","GB",null,null,0],["2026_18_TEN_HOU",18,"2027-01-10","13:00","TEN","HOU",null,null,0],["2026_18_JAX_IND",18,"2027-01-10","13:00","JAX","IND",null,null,0],["2026_18_LV_KC",18,"2027-01-10","13:00","LV","KC",null,null,0],["2026_18_SEA_LA",18,"2027-01-10","13:00","SEA","LA",null,null,0],["2026_18_CHI_MIN",18,"2027-01-10","13:00","CHI","MIN",null,null,0],["2026_18_MIA_NE",18,"2027-01-10","13:00","MIA","NE",null,null,0],["2026_18_TB_NO",18,"2027-01-10","13:00","TB","NO",null,null,0],["2026_18_PHI_NYG",18,"2027-01-10","13:00","PHI","NYG",null,null,0],["2026_18_DAL_WAS",18,"2027-01-10","13:00","DAL","WAS",null,null,0]]};
+const T = DATA.T, GAMES = DATA.G.map(a => ({id:a[0], wk:a[1], date:a[2], time:a[3], away:a[4], home:a[5], as:a[6], hs:a[7], neutral:!!a[8]}));
+const P = [{id:"garrott", name:"Garrott", c:"g"}, {id:"kyle", name:"Kyle", c:"k"}, {id:"together", name:"Together", c:"t"}];
+const LS = "pickem2026";
+let picks = {garrott:{}, kyle:{}, together:{}}, manual = {}, unlock = false, week = 1;
+let db = null, canWrite = true;
+
+// ---------- helpers ----------
+function kickoff(g){
+  const off = g.date >= "2026-11-01" && g.date < "2027-03-14" ? "-05:00" : "-04:00";
+  return new Date(g.date + "T" + g.time + ":00" + off);
+}
+GAMES.forEach(g => g.ko = kickoff(g));
+GAMES.sort((a,b) => a.ko - b.ko);
+const WEEKS = [...new Set(GAMES.map(g => g.wk))].sort((a,b) => a-b);
+function winner(g){
+  if (g.as != null && g.hs != null) return g.as > g.hs ? g.away : g.hs > g.as ? g.home : "TIE";
+  return manual[g.id] || null;
+}
+function started(g){ return Date.now() >= g.ko.getTime(); }
+function lum(hex){
+  const n = parseInt(hex.slice(1),16), r=(n>>16&255)/255, g=(n>>8&255)/255, b=(n&255)/255;
+  const f = c => c <= .03928 ? c/12.92 : Math.pow((c+.055)/1.055, 2.4);
+  return .2126*f(r) + .7152*f(g) + .0722*f(b);
+}
+function badge(ab){
+  const t = T[ab], c1 = t[2], c2raw = t[3];
+  const c2 = c2raw.toLowerCase() === c1.toLowerCase() ? "#ffffff" : c2raw;
+  const txt = lum(c1) > .45 ? "#13202E" : "#FFFFFF";
+  const fs = ab.length > 2 ? 14 : 17;
+  return `<svg class="bdg" viewBox="0 0 40 46" aria-hidden="true">
+    <path d="M20 1.5 37.5 7v16.5C37.5 34.5 30 41.5 20 44.5 10 41.5 2.5 34.5 2.5 23.5V7Z" fill="${c1}" stroke="${c2}" stroke-width="2.5"/>
+    <path d="M5 11.5h30" stroke="${c2}" stroke-width="2.4"/><path d="M5 15h30" stroke="${c2}" stroke-width="1" opacity=".8"/>
+    <text x="20" y="${ab.length>2?31:32}" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="800" font-size="${fs}" fill="${txt}">${ab}</text>
+  </svg>`;
+}
+const CHECK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
+const XMARK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>`;
+const fmtDay = d => d.toLocaleDateString(undefined,{weekday:"long", month:"short", day:"numeric"});
+const fmtTime = d => d.toLocaleTimeString(undefined,{hour:"numeric", minute:"2-digit"});
+function toast(msg){
+  const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+// ---------- records & scoring ----------
+function records(){
+  const r = {}; Object.keys(T).forEach(k => r[k] = [0,0,0]);
+  GAMES.forEach(g => { const w = winner(g); if (!w) return;
+    if (w === "TIE"){ r[g.away][2]++; r[g.home][2]++; }
+    else { r[w][0]++; r[w === g.home ? g.away : g.home][1]++; } });
+  return r;
+}
+function weekScore(wk){
+  const gs = GAMES.filter(g => g.wk === wk), out = {};
+  P.forEach(p => {
+    let right = 0, made = 0;
+    gs.forEach(g => { const pk = picks[p.id][g.id]; if (pk) made++; const w = winner(g); if (pk && w && pk === w) right++; });
+    out[p.id] = {right, made};
+  });
+  out.total = gs.length; out.done = gs.every(g => winner(g));
+  return out;
+}
+
+// ---------- persistence ----------
+function loadLocal(){
+  try { const s = JSON.parse(localStorage.getItem(LS) || "null");
+    if (s){ picks = Object.assign({garrott:{}, kyle:{}, together:{}}, s.picks || {}); manual = s.manual || {}; } } catch(e){}
+}
+function saveLocal(){ try { localStorage.setItem(LS, JSON.stringify({picks, manual})); } catch(e){} }
+const timers = {}, inflight = {}, again = {};
+function payload(path){ return path === "results/manual" ? {winners: manual} : {picks: picks[path.split("/")[1]]}; }
+function persist(path){
+  saveLocal();
+  if (!db || !canWrite) return;
+  clearTimeout(timers[path]);
+  timers[path] = setTimeout(() => { delete timers[path]; flush(path); }, 350);
+}
+async function flush(path){
+  if (inflight[path]){ again[path] = true; return; }
+  inflight[path] = true;
+  try { await db.doc(path).set(payload(path)); }
+  catch(e){
+    if (e && e.code === "invalid_argument"){ canWrite = false; setSync(); toast("Saved on this device only — ask Garrott to invite you as an editor to sync."); }
+  }
+  inflight[path] = false;
+  if (again[path]){ again[path] = false; flush(path); }
+}
+function setSync(){
+  const s = document.getElementById("sync"); if (!s) return;
+  const on = db && canWrite;
+  s.className = "sync" + (on ? " ok" : "");
+  s.lastChild.textContent = on ? "Synced for Garrott and Kyle" : db ? "Read-only, saved on this device" : "Saved on this device";
+}
+async function connect(){
+  if (!window.claude || !window.claude.use) return;
+  try { db = await window.claude.use("db"); } catch(e){ db = null; }
+  if (!db) return;
+  try { const user = await window.claude.use("user"); const c = user ? await user.can("data.write") : null; if (c === false) canWrite = false; } catch(e){}
+  setSync();
+  P.forEach(p => {
+    const path = "picks/" + p.id;
+    db.doc(path).onSnapshot(snap => {
+      if (timers[path] || inflight[path]) return;
+      picks[p.id] = (snap.exists && snap.data().picks) ? {...snap.data().picks} : picks[p.id];
+      saveLocal(); render();
+    }, () => {});
+  });
+  db.doc("results/manual").onSnapshot(snap => {
+    if (timers["results/manual"] || inflight["results/manual"]) return;
+    if (snap.exists && snap.data().winners) manual = {...snap.data().winners};
+    saveLocal(); render();
+  }, () => {});
+}
+
+// ---------- render ----------
+function renderHero(){
+  let tot = {garrott:0, kyle:0, together:0}, wins = {garrott:0, kyle:0}, ties = 0;
+  WEEKS.forEach(wk => { const s = weekScore(wk); P.forEach(p => tot[p.id] += s[p.id].right);
+    if (s.done && (s.garrott.made || s.kyle.made)){
+      if (s.garrott.right > s.kyle.right) wins.garrott++; else if (s.kyle.right > s.garrott.right) wins.kyle++; else ties++; } });
+  document.getElementById("sG").textContent = tot.garrott;
+  document.getElementById("sK").textContent = tot.kyle;
+  const wl = n => n === 1 ? "1 week won" : n + " weeks won";
+  document.getElementById("wG").textContent = wl(wins.garrott);
+  document.getElementById("wK").textContent = wl(wins.kyle);
+  const d = tot.garrott - tot.kyle;
+  document.getElementById("lead").textContent = d === 0 ? (tot.garrott ? "Dead even on correct picks" : "Correct picks this season") : (d > 0 ? "Garrott" : "Kyle") + " leads by " + Math.abs(d) + (Math.abs(d) === 1 ? " pick" : " picks");
+  document.getElementById("lead").textContent += ". Together picks: " + tot.together + " right";
+}
+function renderWeeks(){
+  const nav = document.getElementById("weeks");
+  nav.innerHTML = WEEKS.map(wk => {
+    const s = weekScore(wk); let tag = "";
+    if (s.done && (s.garrott.made || s.kyle.made)) tag = s.garrott.right > s.kyle.right ? "G" : s.kyle.right > s.garrott.right ? "K" : "Tie";
+    else if (wk === currentWeek()) tag = "Now";
+    return `<button class="wk" data-wk="${wk}" aria-current="${wk === week}"><b>${wk}</b><small>${tag || "&nbsp;"}</small></button>`;
+  }).join("");
+}
+function renderWeek(){
+  const gs = GAMES.filter(g => g.wk === week);
+  const s = weekScore(week), rec = records();
+  const first = gs[0].ko, last = gs[gs.length-1].ko;
+  const rng = first.toLocaleDateString(undefined,{month:"short", day:"numeric"}) + " to " + last.toLocaleDateString(undefined,{month:"short", day:"numeric"});
+  document.getElementById("wkt").innerHTML = `Week ${week}<span>${rng}</span>`;
+  const anyResult = gs.some(g => winner(g));
+  document.getElementById("pG").textContent = anyResult ? `${s.garrott.right} right` : `${s.garrott.made}/${s.total}`;
+  document.getElementById("pK").textContent = anyResult ? `${s.kyle.right} right` : `${s.kyle.made}/${s.total}`;
+  document.getElementById("pT").textContent = anyResult ? `${s.together.right} right` : `${s.together.made}/${s.total}`;
+
+  let html = "", lastDay = "";
+  gs.forEach(g => {
+    const day = fmtDay(g.ko);
+    if (day !== lastDay){ html += `<div class="day">${day}</div>`; lastDay = day; }
+    const w = winner(g), st = started(g), locked = st && !unlock;
+    const hasScore = g.as != null;
+    let status = fmtTime(g.ko), sc = "";
+    if (w) { status = "Final"; sc = "fin"; } else if (st) { status = "Underway"; sc = "live"; }
+    const site = g.neutral ? "Neutral site" : "at " + T[g.home][0];
+    html += `<article class="game" data-id="${g.id}">
+      <div class="meta"><span>${site}</span><span class="st ${sc}">${status}</span></div>`;
+    [g.away, g.home].forEach((ab, i) => {
+      const t = T[ab], r = rec[ab], score = hasScore ? (i ? g.hs : g.as) : "";
+      const cls = w && w !== "TIE" ? (w === ab ? "won" : "lost") : "";
+      html += `<div class="row ${cls}">
+        <div class="team" data-team="${ab}" role="button" tabindex="0" aria-label="See ${t[1]} games">${badge(ab)}<div class="tn"><div class="nm">${t[1]}</div><div class="ct">${t[0]} &nbsp;${r[0]}-${r[1]}${r[2] ? "-" + r[2] : ""}</div></div><div class="sc">${score}</div></div>`;
+      P.forEach(p => {
+        const on = picks[p.id][g.id] === ab;
+        let res = ""; if (on && w) res = w === ab ? " right" : " wrong";
+        html += `<button class="ck ${p.c}${on ? " on" : ""}${res}${locked ? " locked" : ""}" data-g="${g.id}" data-t="${ab}" data-p="${p.id}" aria-pressed="${on}" aria-label="${p.name} picks ${t[1]}">${on && res === " wrong" ? XMARK : CHECK}</button>`;
+      });
+      html += `</div>`;
+    });
+    if (st && !hasScore){
+      const m = manual[g.id];
+      html += `<div class="manual">${m ? "Result entered:" : "Who won?"}
+        <button data-win="${g.away}" data-g="${g.id}" aria-pressed="${m === g.away}">${T[g.away][1]}</button>
+        <button data-win="TIE" data-g="${g.id}" aria-pressed="${m === "TIE"}">Tie</button>
+        <button data-win="${g.home}" data-g="${g.id}" aria-pressed="${m === g.home}">${T[g.home][1]}</button></div>`;
+    } else html += `<div class="gap"></div>`;
+    html += `</article>`;
+  });
+  const playing = new Set(gs.flatMap(g => [g.away, g.home]));
+  const byes = Object.keys(T).filter(k => !playing.has(k)).map(k => T[k][1]).sort();
+  if (byes.length) html += `<p class="byes">Bye: ${byes.join(", ")}</p>`;
+  html += `<div class="foot"><label class="tog"><input type="checkbox" id="unlock" ${unlock ? "checked" : ""}> Let me change picks after kickoff</label><span class="sync" id="sync"><i></i><span></span></span></div>`;
+  document.getElementById("main").innerHTML = html;
+  setSync();
+}
+function render(){ renderHero(); renderWeeks(); renderWeek(); }
+function currentWeek(){
+  const now = Date.now();
+  for (const wk of WEEKS){ const gs = GAMES.filter(g => g.wk === wk); if (gs[gs.length-1].ko.getTime() + 5*3600e3 > now) return wk; }
+  return WEEKS[WEEKS.length-1];
+}
+function setWeek(wk, scroll){
+  week = wk; try { history.replaceState(null, "", "#week" + wk); } catch(e){}
+  render(); window.scrollTo({top:0});
+  const b = document.querySelector(`.wk[data-wk="${wk}"]`); if (b && scroll !== false) b.scrollIntoView({inline:"center", block:"nearest"});
+}
+
+// ---------- team games sheet ----------
+function openTeam(ab){
+  const t = T[ab], r = records()[ab];
+  const gs = GAMES.filter(g => g.away === ab || g.home === ab);
+  document.getElementById("shHead").innerHTML = `${badge(ab)}<div><h2 id="shT">${t[0]} ${t[1]}</h2><p>${r[0]}-${r[1]}${r[2] ? "-" + r[2] : ""} in ${t[4]}</p></div>`;
+  const row = g => {
+    const home = g.home === ab, opp = home ? g.away : g.home, w = winner(g);
+    const where = g.neutral ? "vs" : home ? "vs" : "at";
+    const when = g.ko.toLocaleDateString(undefined, {weekday:"short", month:"short", day:"numeric"}) + (g.neutral ? ", neutral site" : "");
+    let res, cls;
+    if (w){
+      const tag = w === "TIE" ? "T" : w === ab ? "W" : "L";
+      cls = tag === "W" ? "w" : tag === "L" ? "l" : "";
+      const us = home ? g.hs : g.as, them = home ? g.as : g.hs;
+      res = us != null ? `${tag} ${us}-${them}` : tag;
+    } else { cls = "up"; res = started(g) ? "Underway" : fmtTime(g.ko); }
+    return `<button class="gl" data-gowk="${g.wk}" aria-label="Go to week ${g.wk}"><span class="wkn">Wk ${g.wk}</span><span class="opw">${badge(opp)}<span class="op">${where} ${T[opp][1]}<span>${when}</span></span></span><span class="res ${cls}">${res}</span></button>`;
+  };
+  const played = gs.filter(g => winner(g)).reverse(), up = gs.filter(g => !winner(g));
+  const bye = WEEKS.find(wk => !gs.some(g => g.wk === wk));
+  let html = "";
+  if (played.length) html += `<div class="sec">Previous games</div>` + played.map(row).join("");
+  if (up.length) html += `<div class="sec">Upcoming</div>` + up.map(row).join("");
+  if (bye) html += `<p class="byeln">Bye in week ${bye}</p>`;
+  document.getElementById("shList").innerHTML = html;
+  document.getElementById("shList").scrollTop = 0;
+  document.getElementById("sheet").hidden = false;
+  document.body.style.overflow = "hidden";
+  openTeam.from = document.activeElement;
+  document.getElementById("shX").focus();
+}
+function closeTeam(){
+  document.getElementById("sheet").hidden = true;
+  document.body.style.overflow = "";
+  if (openTeam.from && openTeam.from.focus) openTeam.from.focus();
+}
+
+// ---------- events ----------
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-close]")){ closeTeam(); return; }
+  const go = e.target.closest("[data-gowk]");
+  if (go){ closeTeam(); setWeek(+go.dataset.gowk); return; }
+  const tm = e.target.closest("[data-team]");
+  if (tm){ openTeam(tm.dataset.team); return; }
+  const wkBtn = e.target.closest(".wk");
+  if (wkBtn){ setWeek(+wkBtn.dataset.wk); return; }
+  const ck = e.target.closest(".ck");
+  if (ck){
+    const g = GAMES.find(x => x.id === ck.dataset.g), p = ck.dataset.p, t = ck.dataset.t;
+    if (started(g) && !unlock){ ck.classList.remove("nudge"); void ck.offsetWidth; ck.classList.add("nudge"); toast("That game has kicked off, so picks are locked"); return; }
+    if (picks[p][g.id] === t) delete picks[p][g.id]; else picks[p][g.id] = t;
+    persist("picks/" + p); render(); return;
+  }
+  const mw = e.target.closest("[data-win]");
+  if (mw){
+    const id = mw.dataset.g, v = mw.dataset.win;
+    if (manual[id] === v) delete manual[id]; else manual[id] = v;
+    persist("results/manual"); render(); return;
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !document.getElementById("sheet").hidden){ closeTeam(); return; }
+  const tm = e.target.closest && e.target.closest("[data-team]");
+  if (tm && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openTeam(tm.dataset.team); }
+});
+document.addEventListener("change", e => { if (e.target.id === "unlock"){ unlock = e.target.checked; renderWeek(); } });
+
+// ---------- start ----------
+loadLocal();
+const h = (location.hash || "").match(/^#week(\d+)$/);
+week = h && WEEKS.includes(+h[1]) ? +h[1] : currentWeek();
+render();
+requestAnimationFrame(() => { const b = document.querySelector(`.wk[data-wk="${week}"]`); if (b) b.scrollIntoView({inline:"center", block:"nearest"}); });
+connect();
+setInterval(() => renderWeek(), 60000);
+</script>
+</body>
+</html>
